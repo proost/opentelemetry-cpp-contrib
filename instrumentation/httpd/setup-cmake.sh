@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# NOTE: every build block below is written as separate statements rather than one
-# long `cmd && cmd && make && make install` chain. Bash exempts commands inside an
-# `&&` list from `errexit` (except the final one), so the old chained form silently
-# swallowed build failures and surfaced them much later as a misleading
-# "Could NOT find Protobuf" from an unrelated step.
-
 set -euxo pipefail
 
 export DEBIAN_FRONTEND=noninteractive
@@ -26,8 +20,6 @@ apt-add-repository "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main"
 apt-get install --no-install-recommends --no-install-suggests -y \
    cmake libboost-all-dev
 
-# gRPC. v1.66 is the newest release that still declares CMAKE_CXX_STANDARD 14, and it
-# matches the gRPC that opentelemetry-cpp 1.24.0 builds against.
 git clone --shallow-submodules --depth 1 --recurse-submodules -b "$GRPC_VERSION" \
    https://github.com/grpc/grpc
 mkdir -p grpc/cmake/build

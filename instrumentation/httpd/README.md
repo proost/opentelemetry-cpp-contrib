@@ -8,7 +8,7 @@
 
 ## Requirements
 
-- httpd (Apache) ver. 2.4.x on Linux (Current release tested only with Ubuntu LTS 18.04 & 20.04)
+- httpd (Apache) ver. 2.4.x on Linux (built and tested on Ubuntu LTS 22.04 & 24.04)
 
 ### Usage
 
@@ -119,6 +119,8 @@ ln -s /mnt/host src
 When local changes are made, you need to restart the `httpd` server to load new version of library, to do that: `apachectl stop; ./build.sh && apachectl start`
 
 ### Prerequisites (Ubuntu)
+
+Ubuntu LTS 22.04 and 24.04 are the versions built and tested in CI.
 
 On Ubuntu you need packages listed here: [setup-environment.sh](./setup-environment.sh) which are prerequisites to compile opentelemetry-cpp and here: [setup-buildtools.sh](./setup-buildtools.sh) for apache development stuff. Then just execute [bulid.sh](./build.sh).
 
