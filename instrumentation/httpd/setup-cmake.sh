@@ -5,7 +5,7 @@ set -euxo pipefail
 export DEBIAN_FRONTEND=noninteractive
 
 GRPC_VERSION=v1.66.0
-OPENTELEMETRY_CPP_VERSION=v1.24.0
+OPENTELEMETRY_CPP_VERSION=v1.22.0
 
 apt-get update
 
