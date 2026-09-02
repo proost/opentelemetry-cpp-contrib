@@ -19,7 +19,6 @@ permissions:
 jobs:
   build:
     name: Build module
-    if: false  # disabled. TODO: fix this job
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -37,7 +36,7 @@ jobs:
       - name: Compile
         run: |
           cd instrumentation/httpd && ./build.sh
-          cp bazel-out/k8-opt/bin/otel.so /tmp/mod-otel.so
+          cp bazel-bin/otel.so /tmp/mod-otel.so
       - name: Upload artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -46,7 +45,6 @@ jobs:
 
   build_cmake:
     name: Build module with CMake
-    if: false  # disabled. TODO: fix this job
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -75,7 +73,6 @@ jobs:
 
   e2e_tests:
     name: Run end-to-end tests
-    if: false  # disabled. TODO: fix this job
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false

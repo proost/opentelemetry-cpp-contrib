@@ -16,7 +16,7 @@ apt-get install -qq libsqlite3-dev
 apt-get install -qq wget
 
 # bazelisk is not in apt repository
-BAZELISK_VERSION=v1.7.4
+BAZELISK_VERSION=v1.29.0
 
 wget -O /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/$BAZELISK_VERSION/bazelisk-linux-amd64
 chmod +x /usr/local/bin/bazel

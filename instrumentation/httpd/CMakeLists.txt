@@ -2,12 +2,18 @@ cmake_minimum_required(VERSION 3.12)
 
 project(opentelemetry-httpd)
 
+# opentelemetry-cpp stopped setting CMAKE_CXX_STANDARD for its consumers in v1.12.0, so
+# the module has to state one. C++14 is the floor imposed by gRPC >= 1.47.
+if(NOT DEFINED CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 14)
+endif()
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 find_package(opentelemetry-cpp REQUIRED)
 find_package(Threads REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(gRPC REQUIRED)
 find_package(CURL REQUIRED)
-find_package(Thrift REQUIRED)
 
 find_path(APR_INCLUDE_DIR
   NAMES apr.h
@@ -59,5 +65,4 @@ target_link_libraries(otel_httpd_module
   PRIVATE
   ${OPENTELEMETRY_CPP_LIBRARIES}
   gRPC::grpc++
-#  Thrift::thrift
 )

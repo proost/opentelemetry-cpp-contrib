@@ -1,0 +1,18 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+
+module(
+    name = "opentelemetry-httpd",
+    version = "0.0.0",
+)
+
+# opentelemetry-cpp is Bzlmod-only from v1.24.0 onward: it no longer ships a
+# WORKSPACE or bazel/repository.bzl, so opentelemetry_cpp_deps() is gone.
+# repo_name keeps the existing @io_opentelemetry_cpp//... labels working.
+bazel_dep(
+    name = "opentelemetry-cpp",
+    version = "1.24.0",
+    repo_name = "io_opentelemetry_cpp",
+)
+
+bazel_dep(name = "rules_cc", version = "0.2.22")

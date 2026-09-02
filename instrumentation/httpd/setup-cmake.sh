@@ -1,75 +1,69 @@
 #!/bin/bash
 
+# NOTE: every build block below is written as separate statements rather than one
+# long `cmd && cmd && make && make install` chain. Bash exempts commands inside an
+# `&&` list from `errexit` (except the final one), so the old chained form silently
+# swallowed build failures and surfaced them much later as a misleading
+# "Could NOT find Protobuf" from an unrelated step.
+
 set -euxo pipefail
 
 export DEBIAN_FRONTEND=noninteractive
 
+GRPC_VERSION=v1.66.0
+OPENTELEMETRY_CPP_VERSION=v1.24.0
+
 apt-get update
 
 apt-get install --no-install-recommends --no-install-suggests -y \
-   build-essential autoconf libtool pkg-config ca-certificates gcc g++ git libcurl4-openssl-dev libpcre3-dev gnupg2 lsb-release curl apt-transport-https software-properties-common zlib1g-dev
-curl -o /etc/apt/trusted.gpg.d/kitware.asc https://apt.kitware.com/keys/kitware-archive-latest.asc \
-    && apt-add-repository "deb https://apt.kitware.com/ubuntu/ `lsb_release -cs` main"
+   build-essential autoconf libtool pkg-config ca-certificates gcc g++ git \
+   libcurl4-openssl-dev libpcre3-dev gnupg2 lsb-release curl apt-transport-https \
+   software-properties-common zlib1g-dev
+
+curl -o /etc/apt/trusted.gpg.d/kitware.asc https://apt.kitware.com/keys/kitware-archive-latest.asc
+apt-add-repository "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main"
 
 apt-get install --no-install-recommends --no-install-suggests -y \
-cmake libboost-all-dev
+   cmake libboost-all-dev
 
-git clone --shallow-submodules --depth 1 --recurse-submodules -b v1.36.4 \
-  https://github.com/grpc/grpc \
-  && cd grpc \
-  && mkdir -p cmake/build \
-  && cd cmake/build \
-  && cmake \
-    -DgRPC_INSTALL=ON \
-    -DgRPC_BUILD_TESTS=OFF \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DgRPC_BUILD_GRPC_NODE_PLUGIN=OFF \
-    -DgRPC_BUILD_GRPC_OBJECTIVE_C_PLUGIN=OFF \
-    -DgRPC_BUILD_GRPC_PHP_PLUGIN=OFF \
-    -DgRPC_BUILD_GRPC_PHP_PLUGIN=OFF \
-    -DgRPC_BUILD_GRPC_PYTHON_PLUGIN=OFF \
-    -DgRPC_BUILD_GRPC_RUBY_PLUGIN=OFF \
-    ../.. \
-  && make -j2 \
-  && make install
+# gRPC. v1.66 is the newest release that still declares CMAKE_CXX_STANDARD 14, and it
+# matches the gRPC that opentelemetry-cpp 1.24.0 builds against.
+git clone --shallow-submodules --depth 1 --recurse-submodules -b "$GRPC_VERSION" \
+   https://github.com/grpc/grpc
+mkdir -p grpc/cmake/build
+cd grpc/cmake/build
+cmake \
+   -DgRPC_INSTALL=ON \
+   -DgRPC_BUILD_TESTS=OFF \
+   -DCMAKE_BUILD_TYPE=Release \
+   -DCMAKE_CXX_STANDARD=14 \
+   -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+   -DgRPC_BUILD_GRPC_NODE_PLUGIN=OFF \
+   -DgRPC_BUILD_GRPC_OBJECTIVE_C_PLUGIN=OFF \
+   -DgRPC_BUILD_GRPC_PHP_PLUGIN=OFF \
+   -DgRPC_BUILD_GRPC_PYTHON_PLUGIN=OFF \
+   -DgRPC_BUILD_GRPC_RUBY_PLUGIN=OFF \
+   ../..
+make -j"$(nproc)"
+make install
+cd -
 
-wget https://github.com/libevent/libevent/releases/download/release-2.1.12-stable/libevent-2.1.12-stable.tar.gz \
-   && tar zxf libevent-2.1.12-stable.tar.gz \
-   && cd libevent-2.1.12-stable \
-   && mkdir -p build \
-   && cd build \
-   && cmake .. \
-   && make -j2 \
-   && make install
-
-git clone --shallow-submodules --depth 1 --recurse-submodules -b v0.14.0 \
-  https://github.com/apache/thrift.git \
-   && cd thrift \
-   && mkdir -p cmake-build \
-   && cd cmake-build \
-   && cmake -DCMAKE_BUILD_TYPE=Release \
-      -DBUILD_TESTING=OFF \
-      -DBUILD_COMPILER=OFF \
-      -DBUILD_C_GLIB=OFF \
-      -DBUILD_JAVA=OFF \
-      -DBUILD_JAVASCRIPT=OFF \
-      -DBUILD_NODEJS=OFF \
-      -DBUILD_PYTHON=OFF \
-      .. \
-   && make -j2 \
-   && make install
-
-git clone --shallow-submodules --depth 1 --recurse-submodules -b "v1.0.0-rc1" \
-   https://github.com/open-telemetry/opentelemetry-cpp.git \
-   && cd opentelemetry-cpp \
-   && mkdir build \
-   && cd build \
-   && cmake -DCMAKE_BUILD_TYPE=Release \
-     -DWITH_OTLP=ON \
-     -DWITH_JAEGER=ON \
-     -DBUILD_TESTING=OFF \
-     -DWITH_EXAMPLES=OFF \
-     -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
-     .. \
-   && make -j2 \
-   && make install
+# opentelemetry-cpp. The Jaeger exporter was removed upstream in v1.10.0, so the thrift
+# and libevent builds that used to live here are gone along with -DWITH_JAEGER=ON.
+# WITH_OTLP was split into WITH_OTLP_GRPC / WITH_OTLP_HTTP / WITH_OTLP_FILE.
+git clone --shallow-submodules --depth 1 --recurse-submodules -b "$OPENTELEMETRY_CPP_VERSION" \
+   https://github.com/open-telemetry/opentelemetry-cpp.git
+mkdir -p opentelemetry-cpp/build
+cd opentelemetry-cpp/build
+cmake \
+   -DCMAKE_BUILD_TYPE=Release \
+   -DCMAKE_CXX_STANDARD=14 \
+   -DWITH_OTLP_GRPC=ON \
+   -DBUILD_TESTING=OFF \
+   -DWITH_EXAMPLES=OFF \
+   -DWITH_BENCHMARK=OFF \
+   -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+   ..
+make -j"$(nproc)"
+make install
+cd -

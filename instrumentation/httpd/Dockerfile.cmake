@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:24.04
 
 #########################################
 # copy setup stuff from opentelemetry-cpp
@@ -13,8 +13,6 @@ RUN /setup-ci/setup-buildtools.sh
 ADD setup-environment.sh /setup/setup-environment.sh
 
 RUN /setup/setup-environment.sh
-
-COPY .clang-format /root
 
 WORKDIR /root
 
@@ -31,7 +29,6 @@ RUN mkdir -p build \
   && cmake .. \
   && make -j2
 
-COPY tools /root/tools
 COPY create-otel-load.sh /root
 COPY opentelemetry.conf /root
 COPY httpd_install_otel.sh /root

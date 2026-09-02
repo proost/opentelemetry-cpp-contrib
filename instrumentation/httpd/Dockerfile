@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:24.04
 
 #########################################
 # copy setup stuff from opentelemetry-cpp
@@ -19,12 +19,11 @@ ADD setup-environment.sh /setup/setup-environment.sh
 RUN /setup/setup-environment.sh
 
 COPY src /root/src
-COPY .clang-format /root
-COPY tools /root/tools
 
 COPY .bazelversion /root
+COPY .bazelrc /root
 COPY BUILD /root
-COPY WORKSPACE /root
+COPY MODULE.bazel /root
 
 WORKDIR /root
 COPY create-otel-load.sh /root
