@@ -1,9 +1,5 @@
 common --enable_platform_specific_config
 
-# opentelemetry-cpp no longer sets a C++ standard for its consumers (dropped in v1.12.0),
-# so the module must state one. C++14 is the floor imposed by gRPC >= 1.47; opentelemetry-cpp
-# 1.24.0 is the newest release whose dependency set (abseil 20240116, gRPC 1.66, protobuf 29)
-# still builds at C++14.
 build:linux --host_cxxopt=-std=c++14 --cxxopt=-std=c++14
 build:macos --host_cxxopt=-std=c++14 --cxxopt=-std=c++14
 

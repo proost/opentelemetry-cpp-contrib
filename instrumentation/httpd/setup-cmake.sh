@@ -48,9 +48,6 @@ make -j"$(nproc)"
 make install
 cd -
 
-# opentelemetry-cpp. The Jaeger exporter was removed upstream in v1.10.0, so the thrift
-# and libevent builds that used to live here are gone along with -DWITH_JAEGER=ON.
-# WITH_OTLP was split into WITH_OTLP_GRPC / WITH_OTLP_HTTP / WITH_OTLP_FILE.
 git clone --shallow-submodules --depth 1 --recurse-submodules -b "$OPENTELEMETRY_CPP_VERSION" \
    https://github.com/open-telemetry/opentelemetry-cpp.git
 mkdir -p opentelemetry-cpp/build

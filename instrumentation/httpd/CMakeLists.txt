@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.12)
 
 project(opentelemetry-httpd)
 
-# opentelemetry-cpp stopped setting CMAKE_CXX_STANDARD for its consumers in v1.12.0, so
-# the module has to state one. C++14 is the floor imposed by gRPC >= 1.47.
 if(NOT DEFINED CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
 endif()

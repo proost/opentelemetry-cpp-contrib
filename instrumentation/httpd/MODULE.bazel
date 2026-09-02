@@ -6,9 +6,6 @@ module(
     version = "0.0.0",
 )
 
-# opentelemetry-cpp is Bzlmod-only from v1.24.0 onward: it no longer ships a
-# WORKSPACE or bazel/repository.bzl, so opentelemetry_cpp_deps() is gone.
-# repo_name keeps the existing @io_opentelemetry_cpp//... labels working.
 bazel_dep(
     name = "opentelemetry-cpp",
     version = "1.24.0",
