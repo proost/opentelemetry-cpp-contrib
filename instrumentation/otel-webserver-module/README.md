@@ -68,7 +68,7 @@ A sample configuration is mentioned in [opentelemetry_module.conf](https://githu
 
 #### Platform Supported
 - The build is supported for **x86-64** platforms.
-- OS support: **Almalinux8, ubuntu20.04**.
+- OS support: **Almalinux8, ubuntu22.04**.
 
 > **Note:** CentOS 7 support was removed; CentOS 7 reached end-of-life and CentOS Linux is
 > discontinued. Use the **Almalinux8** image, which produces the same
@@ -82,7 +82,7 @@ Then execute the following commands -:
 docker-compose --profile default build
 docker-compose --profile default up
 ```
-Alternatively, replace the value of *profile* from **'default'** to **'almalinux8'** or **'ubuntu20.04'** to build in respective supported platforms.
+Alternatively, replace the value of *profile* from **'default'** to **'almalinux8'** or **'ubuntu22.04'** to build in respective supported platforms.
 
 This would start the container alongwith the Opentelemetry Collector and Zipkin. You can check the traces on Zipkin dashboard by checking the port number of Zipkin using ```docker ps``` command. Multiple requests can be sent using the browser.
 
@@ -198,7 +198,7 @@ Currently, Nginx Webserver module monitores some fixed set of modules, which get
 - Supports both stable(1.26.0) and mainline(1.25.5).
 - Earlier support of v1.18.0 is deprecated.
 - The build is supported for **x86-64** platforms.
-- OS support: **Almalinux8, ubuntu20.04**.
+- OS support: **Almalinux8, ubuntu22.04**.
 
 > **Note:** CentOS 7 support was removed; CentOS 7 reached end-of-life and CentOS Linux is
 > discontinued. Use the **Almalinux8** image, which produces the same
@@ -212,7 +212,7 @@ Then execute the following commands -:
 docker-compose --profile almalinux8_nginx build
 docker-compose --profile almalinux8_nginx up
 ```
-Alternatively, replace **'almalinux8_nginx'** with **'ubuntu20.04_nginx'** to build in respective supported platforms.
+Alternatively, replace **'almalinux8_nginx'** with **'ubuntu22.04_nginx'** to build in respective supported platforms.
 
 This would start the container alongwith the Opentelemetry Collector and Zipkin. You can check the traces on Zipkin dashboard by checking the port number of Zipkin using ```docker ps``` command. Multiple requests can be sent using the browser.
 
@@ -278,14 +278,14 @@ docker build --platform linux/amd64 -t otel-webserver-module -f docker/almalinux
 docker run --rm --platform linux/amd64 -w /otel-webserver-module otel-webserver-module ./gradlew runUnitTest
 ```
 
-The other supported images work the same way — swap the ```-f``` path. Only ubuntu20.04 needs
+The other supported images work the same way — swap the ```-f``` path. Only ubuntu22.04 needs
 an extra gradle flag:
 
 - Almalinux8 - ```docker/almalinux8/Dockerfile```, no extra flag
-- ubuntu20.04 - ```docker/ubuntu20.04/Dockerfile```, needs ```-DtargetSystem=ubuntu```
+- ubuntu22.04 - ```docker/ubuntu22.04/Dockerfile```, needs ```-DtargetSystem=ubuntu```
 
 ```
-docker build --platform linux/amd64 -t otel-webserver-module-ubuntu -f docker/ubuntu20.04/Dockerfile .
+docker build --platform linux/amd64 -t otel-webserver-module-ubuntu -f docker/ubuntu22.04/Dockerfile .
 docker run --rm --platform linux/amd64 -w /otel-webserver-module otel-webserver-module-ubuntu ./gradlew runUnitTest -DtargetSystem=ubuntu
 ```
 

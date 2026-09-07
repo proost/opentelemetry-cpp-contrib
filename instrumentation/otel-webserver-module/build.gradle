@@ -54,6 +54,10 @@ project.ext {
     apache24Version = "2.4.23"
     nginxSupportedVersions=props.get("nginxSupportedVersions").split(',')
 
+    // Must match GTEST_VERSION in docker/ubuntu22.04/Dockerfile and
+    // docker/almalinux8/Dockerfile.
+    gtestVersion = "1.12.1"
+
     libraryStageDir = "${platBuildDir}/opentelemetry-webserver-sdk"
     apacheStageDir = "${libraryStageDir}/WebServerModule/Apache"
     nginxStageDir = "${libraryStageDir}/WebServerModule/Nginx"
@@ -499,8 +503,9 @@ task gypUnitTest(type: Exec) {
         ANSDK_DIR: modDepDir,
         BOOST_LIB: BOOST_LIB,
         BOOST_INCLUDE: BOOST_INCLUDE,
+        GTEST_INCLUDE_DIR: "${modDepDir}/googletest/${gtestVersion}/include",
         GTEST_LIB_DIR: target_system == "ubuntu" ?
-            "${modDepDir}/googletest/1.10.0/lib" : "${modDepDir}/googletest/1.10.0/lib64",
+            "${modDepDir}/googletest/${gtestVersion}/lib" : "${modDepDir}/googletest/${gtestVersion}/lib64",
         LIBRARY_FLAGS: libraryFlags,
         CPP_SDK_VERSION: cppSDKVersion,
     ]

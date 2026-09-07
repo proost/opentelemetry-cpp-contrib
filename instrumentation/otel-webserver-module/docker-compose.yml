@@ -6,13 +6,13 @@ services:
     webserver_ubuntu:
         build:
             context: .
-            dockerfile: docker/ubuntu20.04/Dockerfile
+            dockerfile: docker/ubuntu22.04/Dockerfile
         image: apache_ubuntu
         hostname: webserver
         container_name: webserver_ubuntu
         command: bash -c "apache2ctl -k start && tail -f /dev/null "
         profiles:
-            - ubuntu20.04
+            - ubuntu22.04
         ports:
             - "9000:80"
         depends_on:
@@ -35,13 +35,13 @@ services:
     nginx_ubuntu:
         build:
             context: .
-            dockerfile: docker/ubuntu20.04/Dockerfile
+            dockerfile: docker/ubuntu22.04/Dockerfile
         image: nginx_ubuntu
         hostname: webserver
         container_name: nginx_ubuntu
         command: bash -c "export LD_LIBRARY_PATH=/opt/opentelemetry-webserver-sdk/sdk_lib/lib && nginx && tail -f /dev/null"
         profiles:
-            - ubuntu20.04_nginx
+            - ubuntu22.04_nginx
         ports:
             - "8016:80"
         depends_on:
@@ -68,8 +68,8 @@ services:
         container_name: collector
         profiles:
             - default
-            - ubuntu20.04
-            - ubuntu20.04_nginx
+            - ubuntu22.04
+            - ubuntu22.04_nginx
         command: ["--config=/etc/otel-config.yml"]
         volumes:
             - ./otel-config.yml:/etc/otel-config.yml
@@ -86,8 +86,8 @@ services:
         container_name: zipkin
         profiles:
             - default
-            - ubuntu20.04
-            - ubuntu20.04_nginx
+            - ubuntu22.04
+            - ubuntu22.04_nginx
         ports:
             - "9411:9411"
             - "9410:9410"
