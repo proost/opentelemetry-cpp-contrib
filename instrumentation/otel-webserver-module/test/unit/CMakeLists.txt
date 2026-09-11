@@ -56,6 +56,8 @@ target_link_libraries(unit_test PRIVATE
     Threads::Threads
     rt dl z crypt)
 
+target_link_options(unit_test PRIVATE "LINKER:--enable-new-dtags")
+
 set_target_properties(unit_test PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/test")
 

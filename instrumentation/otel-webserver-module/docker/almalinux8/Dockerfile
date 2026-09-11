@@ -43,7 +43,7 @@ RUN dnf install wget -y \
     && dnf install git -y
 
 RUN dnf groupinstall "Development Tools" -y \
-    && dnf install wget -y
+    && dnf install wget bzip2 xz-devel openssl-devel libffi-devel zlib-devel -y
 
 
 ENV GOSU_VERSION=1.10

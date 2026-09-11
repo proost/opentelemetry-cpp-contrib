@@ -128,7 +128,7 @@ task cmakeConfigure(type: Exec) {
     description = 'Configure the CMake build tree'
 
     dependsOn extractDependencies, generateSources
-    dependsOn configureApache22, configureApache24
+    dependsOn 'configureApache22', 'configureApache24'
 
     inputs.file 'CMakeLists.txt'
     inputs.dir 'cmake'
@@ -445,9 +445,11 @@ task runUnitTest(type: Exec) {
     group = 'verification'
     description = 'Run the unit tests'
 
-    dependsOn cmakeBuild
+    dependsOn cmakeBuild, stageLibrary
 
-    environment 'LD_LIBRARY_PATH', "${cmakeBuildDir}/lib"
+    // Staged tree, not the build tree: getSDKInstallPath() locates the SDK via
+    // dladdr and walks up three dirs, which only resolves under sdk_lib/lib.
+    environment 'LD_LIBRARY_PATH', "${libraryStageDir}/sdk_lib/lib"
 
     workingDir "${cmakeBuildDir}/test"
     commandLine './unit_test'
