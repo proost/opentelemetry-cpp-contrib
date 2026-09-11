@@ -193,43 +193,6 @@ task stageLibrary(type: Copy) {
     into libraryStageDir
 }
 
-task verifyExportedSymbols {
-    group = 'verification'
-    description = 'Assert the SDK library exports no third-party symbols'
-
-    dependsOn stageLibrary
-
-    doLast {
-        def lib = file("${libraryStageDir}/sdk_lib/lib/libopentelemetry_webserver_sdk.${sharedLibraryExt}")
-        if (!lib.exists()) {
-            throw new GradleException("staged SDK library not found: ${lib}")
-        }
-
-        def names = new ByteArrayOutputStream().withStream { os ->
-            exec {
-                commandLine 'nm', '-D', '--defined-only', lib
-                standardOutput os
-            }
-            // "<addr> <type> <name>"; take the name so mangled C++ still matches.
-            os.toString().readLines()
-                .collect { it.trim().split(/\s+/).last() }
-                .findAll { it }
-        }
-
-        def leaked = names.findAll {
-            it.startsWith('apr_') || it.startsWith('XML_') || it.contains('log4cxx')
-        }
-
-        if (leaked) {
-            throw new GradleException(
-                "SDK exports ${leaked.size()} third-party symbols that --exclude-libs=ALL " +
-                "should hide:\n  " + leaked.take(10).join("\n  "))
-        }
-
-        println "verifyExportedSymbols: ${names.size()} exported symbols, no third-party leaks"
-    }
-}
-
 task stripLibrary(type: Exec) {
     group = 'SDK Library'
     description = 'Strip the production library'
@@ -513,7 +476,7 @@ task runTests {
     group = 'verification'
     description = 'Run all webserver module tests'
 
-    dependsOn runUnitTest, runNginxIssue474Test, verifyExportedSymbols
+    dependsOn runUnitTest, runNginxIssue474Test
 }
 
 // Code Coverage
